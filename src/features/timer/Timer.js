@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Col, Card, CardBody, CardHeader, Button, Modal, ModalBody,  ModalHeader, Row, Container } from "reactstrap";
+import { Col, Card, CardBody, CardHeader, Button, ButtonGroup, Modal, ModalBody, ModalHeader, Row, Container } from "reactstrap";
 import convertSeconds from "../../utils/convertSeconds";
 import useSound from "use-sound";
 import alarmFx from "../../sounds/alarmFx.mp3"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRotateRight, faPauseCircle, faPlayCircle, fa } from '@fortawesome/free-solid-svg-icons';
-import ActiveTask from "./ActiveTask";
+import { faArrowRotateRight, faPauseCircle, faPlayCircle, faForwardStep } from '@fortawesome/free-solid-svg-icons';
 import { incrementPomoCount, selectActiveTask } from "../tasks/tasksSlice";
 import { useDispatch } from "react-redux";
-import Tomato from "../../svg/tomato.svg"
+import TomatoOutline from "../../svg/tomato-outline.svg"
+import TomatoColor from "../../svg/tomato-color.svg"
 
 const Timer = () => {
     let activeTask = useSelector(selectActiveTask);
-    const dispatch = useDispatch()
+
+    const dispatch = useDispatch();
+
     let modes = {
-        pomo: { name: 'pomodoro', time: 5 },
-        sBreak: { name: 'short break', time: 2 },
-        lBreak: { name: 'long break', time: 10 }
+        pomo: { name: 'pomodoro', time: 25 * 60 },
+        sBreak: { name: 'short break', time: 5 * 60 },
+        lBreak: { name: 'long break', time: 30 * 60 }
 
     }
 
@@ -25,192 +27,245 @@ const Timer = () => {
     const [mode, setMode] = useState(modes.pomo);
     const [seconds, setSeconds] = useState(mode.time);
     const [isActive, setIsActive] = useState(false);
-    const [isAlarmActive, setIsAlarmActive] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [counter, setCounter] = useState(0);
 
+    // Main Timer 
+    const tick = () => {
+        setSeconds(prev => prev - 1);
+    }
+
+    useEffect(() => {
+
+        const timerEnd = () => {
+            playAlarm();
+            if (mode.name === modes.sBreak.name) {
+                changeMode(modes.pomo);
+            }
+            else if (mode.name === modes.pomo.name && counter !== 3) {
+                if (activeTask) {
+                    dispatch(incrementPomoCount(activeTask));
+                }
+
+                setCounter(counter + 1);
+                changeMode(modes.sBreak);
+            }
+
+            else if (mode.name === modes.pomo.name && counter === 3) {
+                if (activeTask) {
+                    dispatch(incrementPomoCount(activeTask));
+                }
+
+                setCounter(counter + 1);
+                changeMode(modes.lBreak);
+
+            }
+
+            else if (mode.name === modes.lBreak.name) {
+                changeMode(modes.pomo);
+                setCounter(0)
+            }
+            setIsModalOpen(true);
+        }
+
+
+        const interval = setInterval(() => {
+            if (!isActive) {
+                return;
+            }
+            if (seconds === 0) {
+                return timerEnd();
+            }
+
+            tick();
+
+        }, 1000);
+
+        return () => clearInterval(interval);
+    });
 
     //Sounds
-    const [play, { stop }] = useSound(
+    const [playAlarm, { stop: stopAlarm }] = useSound(
         alarmFx,
         { volume: 0.75 }
     );
 
-    const toggleTimer = () => {
-        setIsActive(!isActive);
-    }
-
-    const reset = (mode) => {
+    const stopTimer = () => {
         setIsActive(false);
-        setSeconds(mode.time);
+
+    };
+    const startTimer = () => {
+        setIsActive(true);
+
     };
 
-    const pause = () => setIsActive(false);
+    const resetTimer = (mode) => {
+        stopTimer();
+        setSeconds(mode.time);
 
+    };
 
-    const timerEnd = () => {
-        play();
-        pause();
-        console.log(mode)
-
-        if (mode.name === modes.sBreak.name) {
-            changeMode(modes.pomo);
-        }
-
-        else if (mode.name === modes.pomo.name && counter !== 3) {
-            if (activeTask) {
-                dispatch(incrementPomoCount(activeTask));
-            }
-            setCounter(counter + 1);
-            changeMode(modes.sBreak);
-
-        }
-
-        else if (mode.name === modes.pomo.name && counter === 3) {
-            if (activeTask) {
-                dispatch(incrementPomoCount(activeTask));
-            }
-            setCounter(counter + 1);
-            changeMode(modes.lBreak);
-        }
-
-        else if (mode.name === modes.lBreak.name) {
-            changeMode(modes.pomo);
-            setCounter(0)
-        }
-
-        setIsModalOpen(true);
-
-
-
-    }
-    const toggleAlarm = () => setIsAlarmActive(!isAlarmActive)
-
-    const changeMode = (newMode) => {
-        setMode(newMode);
-        reset(newMode);
+    const skipTimer = () => {
+        setSeconds(0)
     }
 
-    const alarmClick = () => {
-        toggleAlarm();
-        isAlarmActive ? stop() : play();
-        console.log('ALARM');
-    }
-
-    useEffect(() => {
-    }, [activeTask])
-
-    useEffect(() => {
-        let interval = null;
-
-        if (isActive) {
-            interval = setInterval(() => {
-                setSeconds(seconds - 1);
-            }, 1000);
-        } else if (!isActive && seconds !== 0) {
-            clearInterval(interval);
-        }
-
-        if (seconds === 0 && isActive) {
-            timerEnd();
-
-        }
-        return () => clearInterval(interval);
-
-
-    }, [isActive, seconds]);
+    const changeMode = (mode) => {
+        setMode(mode)
+        resetTimer(mode)
+    };
 
     const toggleModal = () => {
-        stop();
+        stopAlarm();
         setIsModalOpen(!isModalOpen);
-        toggleTimer();
-    }
+        startTimer();
+    };
 
     const TimerModal = () => {
+        const Options = () => {
+            const changeTime = (modeToChange, newTime) => {
+
+                modes[modeToChange].time = newTime *60;
+                console.log(modes)
+                changeMode(modes[modeToChange])
+                
+                toggleModal()
+
+            }
+
+            if (mode.name === 'short break') {
+                const modeToChange = 'sBreak';
+                return (
+                    <div>
+                        <h2>Time for a break!</h2>
+                        <ButtonGroup>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 3)}> 3 min </Button>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 4)}> 4 min </Button>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 5)}> 5 min </Button>
+                        </ButtonGroup>
+                    </div>
+                )
+            }
+
+            if (mode.name === 'long break') {
+                const modeToChange = 'lBreak';
+                return (
+                    <div>
+                        <h2>Nice work! Time for a longer break!</h2>
+                        <ButtonGroup>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 15)}> 15 min </Button>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 20)}> 20 min </Button>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 25)}> 30 min </Button>
+                        </ButtonGroup>
+                    </div>
+                )
+            }
+
+            if (mode.name === 'pomodoro') {
+                const modeToChange = 'pomo';
+                return (
+                    <div>
+                        <h2>Time to focus!</h2>
+                        <ButtonGroup>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 20)}> 20 min </Button>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 25)}> 25 min </Button>
+                            <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 30)}> 30 min </Button>
+                        </ButtonGroup>
+                    </div>
+                )
+            }
+
+        };
+
         return (
             <Modal isOpen={isModalOpen} toggle={toggleModal}>
                 <ModalHeader toggle={toggleModal}>
                 </ModalHeader>
                 <ModalBody className="d-block-inline text-center" >
-                    <h2> Take a break! </h2>
-                    {activeTask && <h2> {activeTask.name} {activeTask.pomoCount}/{activeTask.pomoCountEst}</h2>}
+                    <Options />
                 </ModalBody>
             </Modal>
         )
-
-    }
+    };
 
     const TomatoBar = () => {
-        const tomatoArray = [...Array(counter).keys()];
+        let tomatoArray = Array(4)
+        if (counter === 0) {
+            tomatoArray.fill(TomatoOutline)
+        }
+        else if (counter > 0 && counter < 4) {
 
+            for (let i = 0; i < counter; i++) {
+                tomatoArray[i] = TomatoColor;
+            }
+            tomatoArray.fill(TomatoOutline, counter, 4)
+        }
+        else if (counter === 4) {
+            tomatoArray.fill(TomatoColor)
+        }
         return (
             <Col>
-                {tomatoArray.map((tomato) => {
+                {tomatoArray.map((tomato, index) => {
                     return (
-                        <img className="m-1 tomato" src={Tomato} ></img>
+                        <img className="m-1 tomato" key={index} src={tomato} ></img>
                     )
                 })}
 
             </Col>
-
         )
-    }
-
+    };
 
     return (
-        <Container>
-            <Row className="justify-content-center ">
-                <Col sm="10">
+        <Container className="mt-0">
+            <Row className="justify-content-center">
+                <Col md="6">
                     <Card color="transparent">
                         <TimerModal />
                         <CardHeader className="text-center">
-
-                            <Button size="md" className="mx-1" color="transparent" active={mode.name === modes.pomo.name} onClick={() => changeMode(modes.pomo)}>
-                                Pomodoro
-                            </Button>
-                            <Button size="md" className="mx-1" color="transparent" active={mode.name === modes.sBreak.name} onClick={() => changeMode(modes.sBreak)}>
-                                Short Break
-                            </Button>
-
-                            <Button size="md" className="mx-1" color=" transparent" active={mode.name === modes.lBreak.name} onClick={() => changeMode(modes.lBreak)}>
-                                Long Break
-                            </Button>
-
-                        </CardHeader>
-                        <CardBody className="text-center text-wrap">
-
-
-                            <h1 className="display-1" >{convertSeconds(seconds)} </h1>
-
-                            <TomatoBar />
-                            {activeTask && <p>{activeTask.name} {activeTask.pomoCount}/{activeTask.pomoCountEst}</p>}
-                            <Container>
-                                <Row className="justify-content-start">
-                                    <Col sm="5" className="p-0">
-                                        <div className="d-flex justify-content-end">
-
-                                            <Button size='lg' color="danger" className=" d-inline m-1" onClick={() => reset(mode)}>
-                                                <FontAwesomeIcon icon={faArrowRotateRight} onClick={toggleTimer} />
-                                            </Button>
-                                        </div>
-                                    </Col>
-
-                                    <Col >
-                                    <div className="d-flex justify-content-start">
-
-                                        <Button size='md' color="success" className=" d-inline m-1 " onClick={toggleTimer}>
-                                            {isActive ? <FontAwesomeIcon className=" play-btn p-0" icon={faPauseCircle} onClick={toggleTimer} /> : <FontAwesomeIcon className="play-btn m-0 p-0" icon={faPlayCircle} />}
+                            <Row className="justify-content-center align-items-center ">
+                                <Col md="10" >
+                                    <ButtonGroup>
+                                        <Button block className="m-1 p-0 rounded" color="success" active={mode.name === modes.pomo.name} onClick={() => changeMode(modes.pomo)}>
+                                            <span className="mode-btn">Pomodoro</span>
                                         </Button>
-                                    </div>
+
+                                        <Button block className="m-1 p-0 rounded " color="success" active={mode.name === modes.sBreak.name} onClick={() => changeMode(modes.sBreak)}>
+                                            <span className="mode-btn">Short Break</span>
+                                        </Button>
+
+                                        <Button block className="m-1 p-0 rounded" color="success" active={mode.name === modes.lBreak.name} onClick={() => changeMode(modes.lBreak)}>
+                                            <span className="mode-btn">Long Break</span>
+                                        </Button>
+                                    </ButtonGroup>
+                                </Col>
+                            </Row>
+                        </CardHeader>
+                        <CardBody className="text-center text-nowrap">
+                            <h1 className="timer-text m-0 p-0" >{convertSeconds(seconds)} </h1>
+                            <TomatoBar />
+                            {activeTask && <p className="lead">{activeTask.name} {activeTask.pomoCount}{activeTask.pomoCountEst && <span>/{activeTask.pomoCountEst}</span>}</p>}
+                            <Container>
+                                <Row className="justify-content-center" >
+                                    <Col sm="10" >
+                                        <ButtonGroup>
+                                            <Button color="danger" className="m-1 text-center rounded" onClick={() => resetTimer(mode)}>
+                                                <FontAwesomeIcon icon={faArrowRotateRight} className='control-btn' />
+                                            </Button>
+                                            {isActive ?
+                                                <Button color="success" className="m-1 text-center  rounded" onClick={stopTimer}>
+                                                    <FontAwesomeIcon icon={faPauseCircle} className='control-btn' />
+                                                </Button>
+                                                : <Button color="success" className="m-1 text-center  rounded" onClick={startTimer}>
+                                                    <FontAwesomeIcon icon={faPlayCircle} className='control-btn' />
+                                                </Button>}
+                                            <Button color="danger" className="m-1 text-center  rounded" onClick={skipTimer}>
+                                                <FontAwesomeIcon icon={faForwardStep} className='control-btn' />
+                                            </Button>
+                                        </ButtonGroup>
                                     </Col>
-
-
-
                                 </Row>
                             </Container>
                         </CardBody>
                     </Card>
-
                 </Col>
             </Row>
         </Container >

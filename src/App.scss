@@ -1,0 +1,79 @@
+@import '../node_modules/bootstrap/scss/bootstrap';
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins/_breakpoints";
+
+$enable-negative-margins: true;
+
+.timer-text {
+    @include font-size(7.5rem);
+}
+
+.App {
+    background-color: rgba(253, 119, 119);
+    
+    height: 100vh;
+    width: 100vw;
+}
+
+
+@include media-breakpoint-up(md) {
+    .mode-btn {
+        @include font-size(1.2rem);
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .mode-btn {
+        @include font-size(1rem);
+        
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .control-btn {
+        @include font-size(2rem);
+        width: 4rem;
+        
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .control-btn {
+        @include font-size(1.0rem);
+        width: 2rem;
+    }
+}
+
+@include media-breakpoint-down(lg) {
+    .control-btn {
+        @include font-size(1.2rem);
+        width: 3rem;
+        
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .control-btn {
+        @include font-size(1.1rem);
+        width: 2.5rem;
+        
+    }
+}
+
+.tomato {
+    width: 2rem;
+    height: auto;
+
+}
+
+.task-tomato {
+    width: 1rem;
+    height: auto;
+
+}
+
+
+.font-weight-bold {
+    font-weight: 700;
+}

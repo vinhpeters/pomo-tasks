@@ -1,17 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
 
-const sampleTask = {
+/* const sampleTask = {
     id: uuid(),
     name: 'Sample Task',
     notes: '',
     active: true,
     pomoCountEst: 4,
     pomoCount: 0
-}
+} */
 
 const initialState = {
-    tasksArray: [sampleTask]
+    tasksArray: []
 };
 
 const tasksSlice = createSlice({
@@ -35,15 +35,18 @@ const tasksSlice = createSlice({
             state.tasksArray = action.payload
         },
         incrementPomoCount: (state, action) => {
-            console.log(action.payload)
             const newCount = action.payload.pomoCount + 1;
             state.tasksArray = state.tasksArray.map((task) => task.id === action.payload.id ? { ...task, pomoCount: newCount } : task);
+        },
+        editTask: (state, action) => {
+            state.tasksArray = state.tasksArray.map((task) => task.id === action.payload.id ? 
+            { ...task, name: action.payload.name , notes: action.payload.notes, pomoCountEst: action.payload.pomoCountEst } : task);
         }
     }
 });
 
 export const tasksReducer = tasksSlice.reducer;
-export const { addTask, removeTask, removeTaskByID, writeTasks, incrementPomoCount } = tasksSlice.actions;
+export const { addTask, removeTask, removeTaskByID, writeTasks, incrementPomoCount, editTask } = tasksSlice.actions;
 export const selectAllTasks = (state) => state.tasks.tasksArray;
 
 export const selectTaskById = (id) => (state) => {
@@ -51,5 +54,8 @@ export const selectTaskById = (id) => (state) => {
 };
 
 export const selectActiveTask = (state) => {
+    if (state.tasks.tasksArray.length === 1){
+        return state.tasks.tasksArray[0];
+    }
     return state.tasks.tasksArray.find((task) => task.active === true);
 };
