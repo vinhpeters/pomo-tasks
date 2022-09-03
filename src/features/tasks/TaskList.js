@@ -38,12 +38,12 @@ const TaskList = () => {
                         <Droppable droppableId='tasklist'>
                             {(provided) => (
                                 <ul className='list-group mt-2' {...provided.droppableProps} ref={provided.innerRef}>
-                                    {tasks.map(({ id, name, notes, pomoCount, pomoCountEst }, index) => {
+                                    {tasks.map((task , index) => {
                                         return (
-                                            <Draggable key={id} draggableId={id} index={index}>
+                                            <Draggable key={task.id} draggableId={task.id} index={index}>
                                                 {(provided) => (
                                                     <li className="list-group-item rounded mt-1 px-0" {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                                                        <Task id={id} name={name} notes={notes} pomoCount = {pomoCount} pomoCountEst={pomoCountEst} />
+                                                        <Task task={task} />
                                                     </li>
                                                 )}
                                             </Draggable>

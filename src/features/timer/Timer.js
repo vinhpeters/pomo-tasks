@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Col, Card, CardBody, CardHeader, Button, ButtonGroup, Modal, ModalBody, ModalHeader, Row, Container } from "reactstrap";
+import { Col, Card, CardBody, CardHeader, Button, ButtonGroup, Modal, ModalBody, ModalHeader, Row, Container, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from "reactstrap";
 import convertSeconds from "../../utils/convertSeconds";
 import useSound from "use-sound";
 import alarmFx from "../../sounds/alarmFx.mp3"
@@ -29,6 +29,7 @@ const Timer = () => {
     const [isActive, setIsActive] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [counter, setCounter] = useState(0);
+
 
     // Main Timer 
     const tick = () => {
@@ -120,17 +121,14 @@ const Timer = () => {
         startTimer();
     };
 
+    const changeTime = (modeToChange, newTime) => {
+
+        modes[modeToChange].time = newTime * 60;
+        changeMode(modes[modeToChange])
+
+    }
     const TimerModal = () => {
         const Options = () => {
-            const changeTime = (modeToChange, newTime) => {
-
-                modes[modeToChange].time = newTime *60;
-                console.log(modes)
-                changeMode(modes[modeToChange])
-                
-                toggleModal()
-
-            }
 
             if (mode.name === 'short break') {
                 const modeToChange = 'sBreak';
@@ -222,20 +220,47 @@ const Timer = () => {
                         <TimerModal />
                         <CardHeader className="text-center">
                             <Row className="justify-content-center align-items-center ">
-                                <Col md="10" >
-                                    <ButtonGroup>
-                                        <Button block className="m-1 p-0 rounded" color="success" active={mode.name === modes.pomo.name} onClick={() => changeMode(modes.pomo)}>
-                                            <span className="mode-btn">Pomodoro</span>
-                                        </Button>
+                                <Col sm="12" >
 
-                                        <Button block className="m-1 p-0 rounded " color="success" active={mode.name === modes.sBreak.name} onClick={() => changeMode(modes.sBreak)}>
-                                            <span className="mode-btn">Short Break</span>
+                                    <UncontrolledDropdown group>
+                                        <Button color={mode.name === modes.pomo.name ? "danger" : "success"} active={mode.name === modes.pomo.name} onClick={() => changeMode(modes.pomo)}>
+                                            <span className="mode-btn"  >Pomodoro</span>
                                         </Button>
+                                        <DropdownToggle caret color={mode.name === modes.pomo.name ? "danger" : "success"} active={mode.name === modes.pomo.name} />
+                                        <DropdownMenu>
+                                            <DropdownItem onClick={() => changeTime('pomo', 20)}> 20 min</DropdownItem>
+                                            <DropdownItem onClick={() => changeTime('pomo', 25)}> 25 min</DropdownItem>
+                                            <DropdownItem onClick={() => changeTime('pomo', 30)}> 30 min</DropdownItem>
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
 
-                                        <Button block className="m-1 p-0 rounded" color="success" active={mode.name === modes.lBreak.name} onClick={() => changeMode(modes.lBreak)}>
-                                            <span className="mode-btn">Long Break</span>
+
+                                    <UncontrolledDropdown group className="m-1">
+                                        <Button color={mode.name === modes.sBreak.name ? "danger" : "success"} active={mode.name === modes.sBreak.name} onClick={() => changeMode(modes.sBreak)}>
+                                            <span className="mode-btn"  >Short Break</span>
                                         </Button>
-                                    </ButtonGroup>
+                                        <DropdownToggle caret className="mode-btn" color={mode.name === modes.sBreak.name ? "danger" : "success"} active={mode.name === modes.sBreak.name} />
+                                        <DropdownMenu>
+                                            <DropdownItem onClick={() => changeTime('sBreak', 2)}> 2 min</DropdownItem>
+                                            <DropdownItem onClick={() => changeTime('sBreak', 2)}> 3 min</DropdownItem>
+                                            <DropdownItem onClick={() => changeTime('sBreak', 5)}> 5 min</DropdownItem>
+                                        </DropdownMenu>
+
+                                    </UncontrolledDropdown>
+
+                                    <UncontrolledDropdown group>
+                                        <Button color={mode.name === modes.lBreak.name ? "danger" : "success"} active={mode.name === modes.lBreak.name} onClick={() => changeMode(modes.lBreak)}>
+                                            <span className="mode-btn"  >Long Break</span>
+                                        </Button>
+                                        <DropdownToggle className="mode-btn" caret color={mode.name === modes.lBreak.name ? "danger" : "success"} active={mode.name === modes.lBreak.name} />
+                                        <DropdownMenu>
+                                            <DropdownItem onClick={() => changeTime('lBreak', 20)}> 20 min</DropdownItem>
+                                            <DropdownItem onClick={() => changeTime('lBreak', 25)}> 25 min</DropdownItem>
+                                            <DropdownItem onClick={() => changeTime('lBreak', 30)}> 30 min</DropdownItem>
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
+
+
                                 </Col>
                             </Row>
                         </CardHeader>
@@ -247,18 +272,18 @@ const Timer = () => {
                                 <Row className="justify-content-center" >
                                     <Col sm="10" >
                                         <ButtonGroup>
-                                            <Button color="danger" className="m-1 text-center rounded" onClick={() => resetTimer(mode)}>
-                                                <FontAwesomeIcon icon={faArrowRotateRight} className='control-btn' />
+                                            <Button color="danger" className="m-1 text-center rounded control-btn" onClick={() => resetTimer(mode)}>
+                                                <FontAwesomeIcon icon={faArrowRotateRight} className='control-btn-icon' />
                                             </Button>
                                             {isActive ?
-                                                <Button color="success" className="m-1 text-center  rounded" onClick={stopTimer}>
-                                                    <FontAwesomeIcon icon={faPauseCircle} className='control-btn' />
+                                                <Button color="success" className="m-1 text-center rounded control-btn" onClick={stopTimer}>
+                                                    <FontAwesomeIcon icon={faPauseCircle} className='control-btn-icon' />
                                                 </Button>
-                                                : <Button color="success" className="m-1 text-center  rounded" onClick={startTimer}>
-                                                    <FontAwesomeIcon icon={faPlayCircle} className='control-btn' />
+                                                : <Button color="success" className="m-1 text-center rounded control-btn" onClick={startTimer}>
+                                                    <FontAwesomeIcon icon={faPlayCircle} className='control-btn-icon' />
                                                 </Button>}
-                                            <Button color="danger" className="m-1 text-center  rounded" onClick={skipTimer}>
-                                                <FontAwesomeIcon icon={faForwardStep} className='control-btn' />
+                                            <Button color="danger" className="m-1 text-center rounded control-btn" onClick={skipTimer}>
+                                                <FontAwesomeIcon icon={faForwardStep} className='control-btn-icon' />
                                             </Button>
                                         </ButtonGroup>
                                     </Col>
