@@ -4,7 +4,6 @@ import { Container } from 'reactstrap';
 import TaskList from './features/tasks/TaskList';
 import Timer from './features/timer/Timer'
 import Header from './features/components/Header';
-import { useEffect } from 'react';
 
 
 function App() {
