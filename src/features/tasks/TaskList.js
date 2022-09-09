@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Container } from "reactstrap";
-import { markActive, selectAllTasks,  writeTasks } from './tasksSlice';
+import { selectAllTasks,  writeTasks } from './tasksSlice';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 import Task from './Task';

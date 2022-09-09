@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Modal, ModalHeader, ModalBody, NavItem, NavLink } from "reactstrap"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfo } from '@fortawesome/free-solid-svg-icons'
+
 
 const About = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -37,7 +36,7 @@ const About = () => {
                     </p>
                     <h3>Resources</h3> <hr />
                     <p>Read more about the Pomodoro Technique here: <a href="https://francescocirillo.com/products/the-pomodoro-technique" target="_blank" rel="noreferrer noopener">francescocirillo.com</a></p>
-                    <p> For full details, read Cirillo's book: <a href="https://www.amazon.com/Pomodoro-Technique-Acclaimed-Time-Management-Transformed/dp/1524760706" target="_blank" rel="noreferrer noopener">The Pomodoro Technique</a> 
+                    <p> For full details, read Cirillo's book: <a href="https://www.amazon.com/Pomodoro-Technique-Acclaimed-Time-Management-Transformed/dp/1524760706" target="_blank" rel="noreferrer noopener">The Pomodoro Technique</a>
                     </p>
 
                 </ModalBody>

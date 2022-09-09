@@ -6,7 +6,7 @@ import useSound from "use-sound";
 import alarmFx from "../../sounds/alarmFx.mp3"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRotateRight, faPauseCircle, faPlayCircle, faForwardStep } from '@fortawesome/free-solid-svg-icons';
-import { incrementPomoCount, markDone, selectActiveTask, selectAllTasks } from "../tasks/tasksSlice";
+import { incrementPomoCount, selectActiveTask } from "../tasks/tasksSlice";
 import { useDispatch } from "react-redux";
 import TomatoOutline from "../../svg/tomato-outline.svg"
 import TomatoColor from "../../svg/tomato-color.svg"
@@ -29,7 +29,7 @@ const Timer = () => {
     const [isActive, setIsActive] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [counter, setCounter] = useState(0);
-    
+
 
 
     // Main Timer 
@@ -141,7 +141,7 @@ const Timer = () => {
                 return (
                     <div>
                         <h2>Time for a break!</h2>
-                        <br/>                     
+                        <br />
                         <ButtonGroup>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 3)}> 3 min </Button>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 4)}> 4 min </Button>
@@ -156,7 +156,7 @@ const Timer = () => {
                 return (
                     <div>
                         <h2>Nice work! Time for a longer break!</h2>
-                        <br/>   
+                        <br />
                         <ButtonGroup>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 15)}> 15 min </Button>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 20)}> 20 min </Button>
@@ -171,7 +171,7 @@ const Timer = () => {
                 return (
                     <div>
                         <h2>Time to focus!</h2>
-                        <br/>   
+                        <br />
                         <ButtonGroup>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 20)}> 20 min </Button>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 25)}> 25 min </Button>
