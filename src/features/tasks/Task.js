@@ -6,12 +6,12 @@ import { validateTaskForm } from '../../utils/validateTaskForm';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faPenToSquare, faSquareCheck } from '@fortawesome/free-solid-svg-icons'
 import { faSquare } from '@fortawesome/free-regular-svg-icons'
-import { editTask, removeTaskByID } from './tasksSlice'
+import { editTask, markDone, removeTaskByID } from './tasksSlice'
 
 
 
 const Task = ({ task }) => {
-    const { id, name, notes, pomoCount, pomoCountEst } = task;
+    const { id, name, notes, pomoCount, pomoCountEst, done } = task;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const dispatch = useDispatch();
 
@@ -99,21 +99,27 @@ const Task = ({ task }) => {
 
 
     return (
-        <div className='d-flex align-items-center justify-content-between'>
-            <div className='m-0'>
-                <FontAwesomeIcon className='mx-1' icon={faBars} />
-                <span className='m-0 fs-5'>{name}</span>
-            </div>
-            <div className='m-0'>
-                <FontAwesomeIcon className='mx-1' icon={faSquare} />
-                <span className='m-0 fs-5'>{name}</span>
-            </div>
-            <EditTaskModal />
+        <div className='d-flex align-items-center justify-content-between '>
+                <div className='m-0'>
+                    {!done && <FontAwesomeIcon className='mx-1' icon={faBars} />}
+                {done ?
+                    <Button size="sm" color='success'  className='mx-2 ' onClick={() => dispatch(markDone(task))}>
+                        <FontAwesomeIcon size='lg' icon={faSquareCheck} />
+                    </Button>
+                    : <Button size="sm" color='danger' className='mx-2 ' onClick={() => dispatch(markDone(task))}>
+                        <FontAwesomeIcon size='lg' icon={faSquare} />
+                    </Button>
+                }
+                  <span className='m-0 fs-5' >{name}</span>
+
+                </div>
             <div className='d-flex align-items-center'>
-                <span className='mx-1'> {pomoCount}{pomoCountEst && <span>/{pomoCountEst}</span>}</span>
-                <Button size="sm" color="success" className='mx-1' onClick={toggleModal}>
+
+                <span className='mx-1'> Pomos:{pomoCount}{pomoCountEst && <span> Est:{pomoCountEst}</span>}</span>
+                <Button size="sm" color="danger" className='mx-1' onClick={toggleModal}>
                     <FontAwesomeIcon icon={faPenToSquare} />
                 </Button>
+                <EditTaskModal />
             </div>
         </div>
 

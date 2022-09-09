@@ -70,6 +70,10 @@ $enable-negative-margins: true;
     }
 }
 
+hr {
+    width: 70%;
+}
+
 
 @include media-breakpoint-up(lg) {
     .control-btn {

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Col, Card, CardBody, CardHeader, Button, ButtonGroup, Modal, ModalBody, ModalHeader, Row, Container, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from "reactstrap";
+import { Col, Card, CardBody, CardHeader, Button, ButtonGroup, Modal, ModalBody, ModalHeader, Row, Container, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from "reactstrap";
 import convertSeconds from "../../utils/convertSeconds";
 import useSound from "use-sound";
 import alarmFx from "../../sounds/alarmFx.mp3"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRotateRight, faPauseCircle, faPlayCircle, faForwardStep } from '@fortawesome/free-solid-svg-icons';
-import { incrementPomoCount, selectActiveTask } from "../tasks/tasksSlice";
+import { incrementPomoCount, markDone, selectActiveTask, selectAllTasks } from "../tasks/tasksSlice";
 import { useDispatch } from "react-redux";
 import TomatoOutline from "../../svg/tomato-outline.svg"
 import TomatoColor from "../../svg/tomato-color.svg"
 
 const Timer = () => {
-    let activeTask = useSelector(selectActiveTask);
+    let activeTask = useSelector(selectActiveTask)
 
     const dispatch = useDispatch();
 
@@ -29,6 +29,7 @@ const Timer = () => {
     const [isActive, setIsActive] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [counter, setCounter] = useState(0);
+    
 
 
     // Main Timer 
@@ -80,10 +81,13 @@ const Timer = () => {
 
             tick();
 
-        }, 1000);
+        }, 1);
 
         return () => clearInterval(interval);
     });
+
+
+
 
     //Sounds
     const [playAlarm, { stop: stopAlarm }] = useSound(
@@ -107,6 +111,7 @@ const Timer = () => {
     };
 
     const skipTimer = () => {
+        setIsActive(true);
         setSeconds(0)
     }
 
@@ -125,6 +130,7 @@ const Timer = () => {
 
         modes[modeToChange].time = newTime * 60;
         changeMode(modes[modeToChange])
+        toggleModal()
 
     }
     const TimerModal = () => {
@@ -135,6 +141,7 @@ const Timer = () => {
                 return (
                     <div>
                         <h2>Time for a break!</h2>
+                        <br/>                     
                         <ButtonGroup>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 3)}> 3 min </Button>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 4)}> 4 min </Button>
@@ -149,6 +156,7 @@ const Timer = () => {
                 return (
                     <div>
                         <h2>Nice work! Time for a longer break!</h2>
+                        <br/>   
                         <ButtonGroup>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 15)}> 15 min </Button>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 20)}> 20 min </Button>
@@ -163,6 +171,7 @@ const Timer = () => {
                 return (
                     <div>
                         <h2>Time to focus!</h2>
+                        <br/>   
                         <ButtonGroup>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 20)}> 20 min </Button>
                             <Button color="success rounded" className="mx-1" onClick={() => changeTime(modeToChange, 25)}> 25 min </Button>
@@ -204,7 +213,7 @@ const Timer = () => {
             <Col>
                 {tomatoArray.map((tomato, index) => {
                     return (
-                        <img className="m-1 tomato" key={index} src={tomato} ></img>
+                        <img className="m-1 tomato" key={index} src={tomato} alt="Tomato icon" />
                     )
                 })}
 
@@ -254,8 +263,8 @@ const Timer = () => {
                                         </Button>
                                         <DropdownToggle className="mode-btn" caret color={mode.name === modes.lBreak.name ? "danger" : "success"} active={mode.name === modes.lBreak.name} />
                                         <DropdownMenu>
+                                            <DropdownItem onClick={() => changeTime('lBreak', 15)}> 15 min</DropdownItem>
                                             <DropdownItem onClick={() => changeTime('lBreak', 20)}> 20 min</DropdownItem>
-                                            <DropdownItem onClick={() => changeTime('lBreak', 25)}> 25 min</DropdownItem>
                                             <DropdownItem onClick={() => changeTime('lBreak', 30)}> 30 min</DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
@@ -267,7 +276,7 @@ const Timer = () => {
                         <CardBody className="text-center text-nowrap">
                             <h1 className="timer-text m-0 p-0" >{convertSeconds(seconds)} </h1>
                             <TomatoBar />
-                            {activeTask && <p className="lead">{activeTask.name} {activeTask.pomoCount}{activeTask.pomoCountEst && <span>/{activeTask.pomoCountEst}</span>}</p>}
+                            {activeTask ? <p className="lead">{activeTask.name}</p> : <p className="lead">Choose a task!</p>}
                             <Container>
                                 <Row className="justify-content-center" >
                                     <Col sm="10" >

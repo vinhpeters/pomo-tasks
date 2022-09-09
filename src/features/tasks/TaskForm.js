@@ -25,7 +25,7 @@ const TaskForm = () => {
             notes: values.notes,
             pomoCountEst: values.pomoCountEst,
             pomoCount: 0,
-            active: false
+            done: false
 
         };
 
