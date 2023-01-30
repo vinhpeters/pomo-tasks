@@ -6,6 +6,8 @@
 A Pomodoro Technique timer app with integrated task management built with React/
 Redux. Based on the book The Pomodoro Technique by Francesco Cirillo.
 
+## Demo
+[You can try out the app here](https://pomo-tasks.netlify.app/)
 ## Features
 - Follows Cirillo's recommended workflow with automatic short breaks after each pomo and long breaks after four pomo cycles.
 - Variable pomo & break block times
