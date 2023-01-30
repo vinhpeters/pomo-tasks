@@ -1,3 +1,37 @@
+# Pomo Tasks
+
+![PomoTasks!](https://user-images.githubusercontent.com/10931117/215369172-18db0e20-1fcd-48e4-92d4-00368d5bb217.gif)
+
+## About
+A Pomodoro Technique timer app with integrated task management built with React/
+Redux. Based on the book The Pomodoro Technique by Francesco Cirillo.
+
+## Features
+- Follows Cirillo's recommended workflow with automatic short breaks after each pomo and long breaks after four pomo cycles.
+- Variable pomo & break block times
+- Draggable task list with pomo counter
+- Saves tasks in browser cache
+
+## Technologies
+- React
+- Redux
+- Redux Persist
+- react-strap
+- Formik
+- react-beautiful-dnd
+
+## Setup 
+To run this project
+ 
+- Clone the GitHub repository locally to your computer
+- In the root directory run:
+```sh
+npm install 
+```
+```sh 
+npm start
+```
+
 ## Pomo what?
 PomoTasks is based the on the Pomodoro Technique created by Francesco Cirillo.
 
